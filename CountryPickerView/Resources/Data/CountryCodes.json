@@ -28,5 +28,30 @@
 "name": "Israel",
 "dial_code": "+972",
 "code": "IL"
+},
+{
+"name": "Ireland",
+"dial_code": "+353",
+"code": "IE"
+},
+{
+"name": "Romania",
+"dial_code": "+40",
+"code": "RO"
+},
+{
+"name": "France",
+"dial_code": "+33",
+"code": "FR"
+},
+{
+"name": "Spain",
+"dial_code": "+34",
+"code": "ES"
+},
+{
+"name": "United Kingdom",
+"dial_code": "+44",
+"code": "GB"
 }
 ]
