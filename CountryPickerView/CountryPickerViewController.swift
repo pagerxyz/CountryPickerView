@@ -139,6 +139,7 @@ extension CountryPickerViewController {
         if dataSource.showPhoneCodeInList {
             name = "\(name) (\u{202A}\(country.phoneCode)\u{202C})"
         }
+        cell.backgroundColor = UIColor(hex: 0x121212)
         cell.imageView?.image = country.flag
         
         cell.flgSize = dataSource.cellImageViewSize
