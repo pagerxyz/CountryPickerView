@@ -33,6 +33,9 @@ public class CountryPickerViewController: UITableViewController {
     override public func viewDidLoad() {
         super.viewDidLoad()
         
+        navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
+        navigationController?.navigationBar.shadowImage = UIImage()
+        navigationController?.navigationBar.backgroundColor = UIColor(hex: 0x121212)
         prepareTableItems()
         prepareNavItem()
         prepareSearchBar()
@@ -45,8 +48,10 @@ extension CountryPickerViewController {
     
     func prepareTableItems()  {
         tableView.separatorStyle = .none
+        
         view.backgroundColor = UIColor(hex: 0x121212)
         tableView.backgroundColor = UIColor(hex: 0x121212)
+        tableView.backgroundView?.backgroundColor = UIColor(hex: 0x121212)
         if !showOnlyPreferredSection {
             let countriesArray = countryPickerView.usableCountries
             let locale = dataSource.localeForCountryNameInList
@@ -99,12 +104,16 @@ extension CountryPickerViewController {
         searchController?.definesPresentationContext = true
         searchController?.searchBar.delegate = self
         searchController?.delegate = self
+        searchController?.searchBar.setupSearchBar(background: UIColor(hex: 0x121212), inputText: UIColor.white, placeholderText: UIColor.white.withAlphaComponent(0.5), image: UIColor.white.withAlphaComponent(0.5))
 
         switch searchBarPosition {
-        case .tableViewHeader: tableView.tableHeaderView = searchController?.searchBar
+        case .tableViewHeader:
+            tableView.tableHeaderView = searchController?.searchBar
         case .navigationBar: navigationItem.titleView = searchController?.searchBar
         default: break
         }
+        self.tableView.setValue(UIColor(hex: 0x121212) , forKey: "tableHeaderBackgroundColor")
+
     }
     
     @objc private func close() {
@@ -156,6 +165,8 @@ extension CountryPickerViewController {
         cell.accessoryType = country == countryPickerView.selectedCountry &&
             dataSource.showCheckmarkInList ? .checkmark : .none
         cell.separatorInset = .zero
+        cell.selectionStyle = .none
+
         return cell
     }
     
@@ -192,7 +203,7 @@ extension CountryPickerViewController {
     }
     
     override public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: true)
+        tableView.deselectRow(at: indexPath, animated: false)
         let country = isSearchMode ? searchResults[indexPath.row]
             : countries[sectionsTitles[indexPath.section]]![indexPath.row]
 
@@ -359,4 +370,69 @@ class CountryPickerViewDataSourceInternal: CountryPickerViewDataSource {
     var excludedCountries: [Country] {
         return view.dataSource?.excludedCountries(in: view) ?? excludedCountries(in: view)
     }
+}
+
+extension UISearchBar {
+
+    func setupSearchBar(background: UIColor = .white, inputText: UIColor = .black, placeholderText: UIColor = .gray, image: UIColor = .black) {
+
+        self.searchBarStyle = .minimal
+
+        self.barStyle = .default
+
+        // IOS 12 and lower:
+        for view in self.subviews {
+
+            for subview in view.subviews {
+                if subview is UITextField {
+                    if let textField: UITextField = subview as? UITextField {
+
+                        // Background Color
+                        textField.backgroundColor = background
+
+                        //   Text Color
+                        textField.textColor = inputText
+
+                        //  Placeholder Color
+                        textField.attributedPlaceholder = NSAttributedString(string: textField.placeholder ?? "", attributes: [NSAttributedString.Key.foregroundColor : placeholderText])
+
+                        //  Default Image Color
+                        if let leftView = textField.leftView as? UIImageView {
+                            leftView.image = leftView.image?.withRenderingMode(.alwaysTemplate)
+                            leftView.tintColor = image
+                        }
+
+                        let backgroundView = textField.subviews.first
+                        backgroundView?.backgroundColor = background
+                        backgroundView?.layer.cornerRadius = 10.5
+                        backgroundView?.layer.masksToBounds = true
+
+                    }
+                }
+            }
+
+        }
+
+        // IOS 13 only:
+        if let textField = self.value(forKey: "searchField") as? UITextField {
+
+            // Background Color
+            textField.backgroundColor = background
+
+            //   Text Color
+            textField.textColor = inputText
+
+            //  Placeholder Color
+            textField.attributedPlaceholder = NSAttributedString(string: textField.placeholder ?? "", attributes: [NSAttributedString.Key.foregroundColor : placeholderText])
+
+            //  Default Image Color
+            if let leftView = textField.leftView as? UIImageView {
+                leftView.image = leftView.image?.withRenderingMode(.alwaysTemplate)
+                leftView.tintColor = image
+            }
+
+        }
+
+    }
+
 }
