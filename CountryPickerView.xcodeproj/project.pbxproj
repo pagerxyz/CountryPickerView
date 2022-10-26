@@ -15,6 +15,8 @@
 		00B095FC1F75AD6200860F82 /* NibView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00B095FB1F75AD6200860F82 /* NibView.swift */; };
 		50468942203753BF00009BA1 /* Delegate+DataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50468941203753BF00009BA1 /* Delegate+DataSource.swift */; };
 		743599E0270895CF003EBF60 /* Bundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 743599DF270895CE003EBF60 /* Bundle.swift */; };
+		E22307292909611300B8BD89 /* Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = E22307282909611300B8BD89 /* Color.swift */; };
+		E223072B2909612500B8BD89 /* UIColor+Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E223072A2909612500B8BD89 /* UIColor+Helper.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -283,6 +285,8 @@
 		74359D1A2708A5D1003EBF60 /* TJ.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = TJ.png; sourceTree = "<group>"; };
 		74359D1C2708A5D1003EBF60 /* CountryCodes.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = CountryCodes.json; sourceTree = "<group>"; };
 		7451370726D03FC60067E4EA /* Package.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = SOURCE_ROOT; };
+		E22307282909611300B8BD89 /* Color.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Color.swift; sourceTree = "<group>"; };
+		E223072A2909612500B8BD89 /* UIColor+Helper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Helper.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -322,6 +326,8 @@
 				004CA2EF1F7056E700B690B8 /* Info.plist */,
 				004CA3211F70609900B690B8 /* CountryPickerView.swift */,
 				004CA3301F70782400B690B8 /* CountryPickerViewController.swift */,
+				E22307282909611300B8BD89 /* Color.swift */,
+				E223072A2909612500B8BD89 /* UIColor+Helper.swift */,
 				004CA3321F70787200B690B8 /* Extensions.swift */,
 				00B095FB1F75AD6200860F82 /* NibView.swift */,
 				50468941203753BF00009BA1 /* Delegate+DataSource.swift */,
@@ -692,10 +698,12 @@
 			files = (
 				50468942203753BF00009BA1 /* Delegate+DataSource.swift in Sources */,
 				743599E0270895CF003EBF60 /* Bundle.swift in Sources */,
+				E22307292909611300B8BD89 /* Color.swift in Sources */,
 				00B095FC1F75AD6200860F82 /* NibView.swift in Sources */,
 				004CA3311F70782400B690B8 /* CountryPickerViewController.swift in Sources */,
 				004CA3331F70787200B690B8 /* Extensions.swift in Sources */,
 				004CA3221F70609900B690B8 /* CountryPickerView.swift in Sources */,
+				E223072B2909612500B8BD89 /* UIColor+Helper.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

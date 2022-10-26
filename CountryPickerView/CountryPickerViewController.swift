@@ -44,6 +44,9 @@ public class CountryPickerViewController: UITableViewController {
 extension CountryPickerViewController {
     
     func prepareTableItems()  {
+        tableView.separatorStyle = .none
+        view.backgroundColor = UIColor(hex: 0x121212)
+        tableView.backgroundColor = UIColor(hex: 0x121212)
         if !showOnlyPreferredSection {
             let countriesArray = countryPickerView.usableCountries
             let locale = dataSource.localeForCountryNameInList
