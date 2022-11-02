@@ -132,11 +132,16 @@ extension CountryPickerViewController {
         return isSearchMode ? searchResults.count : countries[sectionsTitles[section]]!.count
     }
     
+    public override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 50
+    }
+    
     override public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let identifier = String(describing: CountryTableViewCell.self)
         
         let cell = tableView.dequeueReusableCell(withIdentifier: identifier) as? CountryTableViewCell
             ?? CountryTableViewCell(style: .default, reuseIdentifier: identifier)
+        
         
         let country = isSearchMode ? searchResults[indexPath.row]
             : countries[sectionsTitles[indexPath.section]]![indexPath.row]
@@ -159,6 +164,9 @@ extension CountryPickerViewController {
         
         cell.textLabel?.text = name
         cell.textLabel?.font = dataSource.cellLabelFont
+        cell.dialingCodeLabel.font = dataSource.diallingCodeFont
+        cell.dialingCodeLabel.text = country.phoneCode
+        cell.dialingCodeLabel.textColor = UIColor(white: 1, alpha: 0.5)
         if let color = dataSource.cellLabelColor {
             cell.textLabel?.textColor = color
         }
@@ -174,16 +182,16 @@ extension CountryPickerViewController {
         return isSearchMode ? nil : sectionsTitles[section]
     }
     
-    override public func sectionIndexTitles(for tableView: UITableView) -> [String]? {
-        if isSearchMode {
-            return nil
-        } else {
-            if hasPreferredSection {
-                return Array<String>(sectionsTitles.dropFirst())
-            }
-            return sectionsTitles
-        }
-    }
+//    override public func sectionIndexTitles(for tableView: UITableView) -> [String]? {
+//        if isSearchMode {
+//            return nil
+//        } else {
+//            if hasPreferredSection {
+//                return Array<String>(sectionsTitles.dropFirst())
+//            }
+//            return sectionsTitles
+//        }
+//    }
     
     override public func tableView(_ tableView: UITableView, sectionForSectionIndexTitle title: String, at index: Int) -> Int {
         return sectionsTitles.firstIndex(of: title)!
@@ -282,6 +290,25 @@ class CountryTableViewCell: UITableViewCell {
     
     var flgSize: CGSize = .zero
     
+    var dialingCodeLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        addSubview(dialingCodeLabel)
+        if #available(iOS 9.0, *) {
+            dialingCodeLabel.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -24).isActive = true
+            dialingCodeLabel.centerYAnchor.constraint(equalTo: self.centerYAnchor, constant: 0).isActive = true
+        }
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func layoutSubviews() {
         super.layoutSubviews()
         imageView?.frame.size = flgSize
@@ -293,7 +320,7 @@ class CountryTableViewCell: UITableViewCell {
 // MARK:- An internal implementation of the CountryPickerViewDataSource.
 // Returns default options where necessary if the data source is not set.
 class CountryPickerViewDataSourceInternal: CountryPickerViewDataSource {
-    
+        
     private unowned var view: CountryPickerView
     
     init(view: CountryPickerView) {
@@ -306,6 +333,10 @@ class CountryPickerViewDataSourceInternal: CountryPickerViewDataSource {
     
     var preferredCountriesSectionTitle: String? {
         return view.dataSource?.sectionTitleForPreferredCountries(in: view)
+    }
+    
+    var diallingCodeFont: UIFont {
+        return view.dataSource?.diallingCodeFont(in: view) ?? diallingCodeFont(in: view)
     }
     
     var showOnlyPreferredSection: Bool {

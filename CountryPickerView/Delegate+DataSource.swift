@@ -82,6 +82,9 @@ public protocol CountryPickerViewDataSource: class {
     
     /// An array of countries you wish to exclude from the list of countries.
     func excludedCountries(in countryPickerView: CountryPickerView) -> [Country]
+    
+    /// dialing code font.
+    func diallingCodeFont(in countryPickerView: CountryPickerView) -> UIFont
 }
 
 // MARK:- CountryPickerViewDataSource default implementations
@@ -153,6 +156,10 @@ public extension CountryPickerViewDataSource {
     
     func excludedCountries(in countryPickerView: CountryPickerView) -> [Country] {
         return []
+    }
+    
+    func diallingCodeFont(in countryPickerView: CountryPickerView) -> UIFont {
+        return UIFont.systemFont(ofSize: 17)
     }
 }
 
