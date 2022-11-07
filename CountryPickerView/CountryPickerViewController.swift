@@ -55,11 +55,18 @@ public class CountryPickerViewController: UITableViewController {
 // UI Setup
 extension CountryPickerViewController {
     
+    @objc private func dismissKeyboard() {
+        searchBar.endEditing(true)
+    }
+    
     func prepareTableItems()  {
         tableView.separatorStyle = .none
         view.backgroundColor = UIColor(hex: 0x121212)
         tableView.backgroundColor = UIColor(hex: 0x121212)
         tableView.backgroundView?.backgroundColor = UIColor(hex: 0x121212)
+        let tapAroundGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        tapAroundGesture.cancelsTouchesInView = true
+        tableView.addGestureRecognizer(tapAroundGesture)
         if !showOnlyPreferredSection {
             let countriesArray = countryPickerView.usableCountries
             let locale = dataSource.localeForCountryNameInList
