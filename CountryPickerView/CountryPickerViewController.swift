@@ -11,6 +11,14 @@ import UIKit
 public class CountryPickerViewController: UITableViewController {
 
     public var searchController: UISearchController?
+    private lazy var searchBar: UISearchBar = {
+        let searchBar = UISearchBar()
+        searchBar.setupSearchBar(background: UIColor(hex: 0x121212), inputText: UIColor.white, placeholderText: UIColor.white.withAlphaComponent(0.5), image: UIColor.white.withAlphaComponent(0.5))
+        searchBar.delegate = self
+        return searchBar
+    }()
+
+    var searchTerm = ""
     fileprivate var searchResults = [Country]()
     fileprivate var isSearchMode = false
     fileprivate var sectionsTitles = [String]()
@@ -22,7 +30,7 @@ public class CountryPickerViewController: UITableViewController {
     fileprivate var showOnlyPreferredSection: Bool {
         return dataSource.showOnlyPreferredSection
     }
-    internal weak var countryPickerView: CountryPickerView! {
+    public var countryPickerView: CountryPickerView! {
         didSet {
             dataSource = CountryPickerViewDataSourceInternal(view: countryPickerView)
         }
@@ -48,7 +56,6 @@ extension CountryPickerViewController {
     
     func prepareTableItems()  {
         tableView.separatorStyle = .none
-        
         view.backgroundColor = UIColor(hex: 0x121212)
         tableView.backgroundColor = UIColor(hex: 0x121212)
         tableView.backgroundView?.backgroundColor = UIColor(hex: 0x121212)
@@ -78,6 +85,7 @@ extension CountryPickerViewController {
         
         tableView.sectionIndexBackgroundColor = .clear
         tableView.sectionIndexTrackingBackgroundColor = .clear
+        tableView.bounces = false
     }
     
     func prepareNavItem() {
@@ -97,21 +105,28 @@ extension CountryPickerViewController {
         if searchBarPosition == .hidden  {
             return
         }
-        searchController = UISearchController(searchResultsController:  nil)
-        searchController?.searchResultsUpdater = self
-        searchController?.dimsBackgroundDuringPresentation = false
-        searchController?.hidesNavigationBarDuringPresentation = searchBarPosition == .tableViewHeader
-        searchController?.definesPresentationContext = true
-        searchController?.searchBar.delegate = self
-        searchController?.delegate = self
-        searchController?.searchBar.setupSearchBar(background: UIColor(hex: 0x121212), inputText: UIColor.white, placeholderText: UIColor.white.withAlphaComponent(0.5), image: UIColor.white.withAlphaComponent(0.5))
 
-        switch searchBarPosition {
-        case .tableViewHeader:
-            tableView.tableHeaderView = searchController?.searchBar
-        case .navigationBar: navigationItem.titleView = searchController?.searchBar
-        default: break
-        }
+        let countryCodeLabel = UILabel()
+        countryCodeLabel.text = "Country code"
+        countryCodeLabel.font = UIFont.systemFont(ofSize: 16, weight: .semibold)
+        countryCodeLabel.textAlignment = .center
+        countryCodeLabel.textColor = UIColor(hex: 0xFFFFFF, alpha: 0.7)
+        let customTableHeaderView = UIView()
+        customTableHeaderView.frame = CGRect(x: 0, y: 0, width: 0, height: 116)
+        customTableHeaderView.addSubview(searchBar)
+        customTableHeaderView.addSubview(countryCodeLabel)
+        countryCodeLabel.translatesAutoresizingMaskIntoConstraints = false
+        countryCodeLabel.topAnchor.constraint(equalTo: customTableHeaderView.topAnchor, constant: 16).isActive = true
+        countryCodeLabel.leftAnchor.constraint(equalTo: customTableHeaderView.leftAnchor, constant: 0).isActive = true
+        countryCodeLabel.rightAnchor.constraint(equalTo: customTableHeaderView.rightAnchor, constant: 0).isActive = true
+        countryCodeLabel.heightAnchor.constraint(equalToConstant: 24).isActive = true
+        searchBar.translatesAutoresizingMaskIntoConstraints = false
+        searchBar.topAnchor.constraint(equalTo: countryCodeLabel.bottomAnchor, constant: 16).isActive = true
+        searchBar.heightAnchor.constraint(equalToConstant: 44).isActive = true
+        searchBar.leftAnchor.constraint(equalTo: customTableHeaderView.leftAnchor, constant: 12).isActive = true
+        searchBar.rightAnchor.constraint(equalTo: customTableHeaderView.rightAnchor, constant: -12).isActive = true
+        tableView.tableHeaderView = customTableHeaderView
+
         self.tableView.setValue(UIColor(hex: 0x121212) , forKey: "tableHeaderBackgroundColor")
 
     }
@@ -154,21 +169,21 @@ extension CountryPickerViewController {
             name = "\(name) (\u{202A}\(country.phoneCode)\u{202C})"
         }
         cell.backgroundColor = UIColor(hex: 0x121212)
-        cell.imageView?.image = country.flag
+        cell.flagImageView.image = country.flag
         
-        cell.flgSize = dataSource.cellImageViewSize
-        cell.imageView?.clipsToBounds = true
+//        cell.flgSize = dataSource.cellImageViewSize
+        cell.flagImageView.clipsToBounds = true
 
-        cell.imageView?.layer.cornerRadius = dataSource.cellImageViewCornerRadius
-        cell.imageView?.layer.masksToBounds = true
+        cell.flagImageView.layer.cornerRadius = dataSource.cellImageViewCornerRadius
+        cell.flagImageView.layer.masksToBounds = true
         
-        cell.textLabel?.text = name
-        cell.textLabel?.font = dataSource.cellLabelFont
+        cell.countryLabel.text = name
+        cell.countryLabel.font = dataSource.cellLabelFont
         cell.dialingCodeLabel.font = dataSource.diallingCodeFont
         cell.dialingCodeLabel.text = country.phoneCode
         cell.dialingCodeLabel.textColor = UIColor(white: 1, alpha: 0.5)
         if let color = dataSource.cellLabelColor {
-            cell.textLabel?.textColor = color
+            cell.countryLabel.textColor = color
         }
         cell.accessoryType = country == countryPickerView.selectedCountry &&
             dataSource.showCheckmarkInList ? .checkmark : .none
@@ -181,17 +196,6 @@ extension CountryPickerViewController {
     override public func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         return isSearchMode ? nil : sectionsTitles[section]
     }
-    
-//    override public func sectionIndexTitles(for tableView: UITableView) -> [String]? {
-//        if isSearchMode {
-//            return nil
-//        } else {
-//            if hasPreferredSection {
-//                return Array<String>(sectionsTitles.dropFirst())
-//            }
-//            return sectionsTitles
-//        }
-//    }
     
     override public func tableView(_ tableView: UITableView, sectionForSectionIndexTitle title: String, at index: Int) -> Int {
         return sectionsTitles.firstIndex(of: title)!
@@ -211,6 +215,7 @@ extension CountryPickerViewController {
     }
     
     override public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        searchBar.endEditing(true)
         tableView.deselectRow(at: indexPath, animated: false)
         let country = isSearchMode ? searchResults[indexPath.row]
             : countries[sectionsTitles[indexPath.section]]![indexPath.row]
@@ -226,6 +231,9 @@ extension CountryPickerViewController {
             navigationController?.dismiss(animated: true, completion: completion)
         } else {
             navigationController?.popViewController(animated: true, completion: completion)
+        }
+        if navigationController == nil {
+            self.countryPickerView.selectedCountry = country
         }
     }
 }
@@ -258,50 +266,88 @@ extension CountryPickerViewController: UISearchResultsUpdating {
     }
 }
 
-// MARK:- UISearchBarDelegate
-extension CountryPickerViewController: UISearchBarDelegate {
-    public func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
-        // Hide the back/left navigationItem button
-        navigationItem.leftBarButtonItem = nil
-        navigationItem.hidesBackButton = true
-    }
-    
-    public func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        // Show the back/left navigationItem button
-        prepareNavItem()
-        navigationItem.hidesBackButton = false
-    }
-}
+// MARK: - UISearchBarDelegate
 
-// MARK:- UISearchControllerDelegate
-// Fixes an issue where the search bar goes off screen sometimes.
-extension CountryPickerViewController: UISearchControllerDelegate {
-    public func willPresentSearchController(_ searchController: UISearchController) {
-        self.navigationController?.navigationBar.isTranslucent = true
+extension CountryPickerViewController: UISearchBarDelegate {
+    private func disableSearchMode() {
+        guard isSearchMode else { return }
+
+        isSearchMode = false
+        
     }
     
-    public func willDismissSearchController(_ searchController: UISearchController) {
-        self.navigationController?.navigationBar.isTranslucent = false
+    public func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        searchTerm = (searchBar.text ?? "").trimmingCharacters(in: .newlines)
+        NSObject.cancelPreviousPerformRequests(withTarget: self)
+        perform(#selector(searchCountries), with: nil, afterDelay: 0.1)
+    }
+    
+    @objc private func searchCountries() {
+        isSearchMode = false
+
+        if let text = searchBar.text, !text.isEmpty {
+            isSearchMode = true
+            searchResults.removeAll()
+            
+            var indexArray = [Country]()
+            
+            if showOnlyPreferredSection && hasPreferredSection,
+                let array = countries[dataSource.preferredCountriesSectionTitle!] {
+                indexArray = array
+            } else if let array = countries[String(text.capitalized[text.startIndex])] {
+                indexArray = array
+            }
+
+            searchResults.append(contentsOf: indexArray.filter({
+                let name = ($0.localizedName(dataSource.localeForCountryNameInList) ?? $0.name).lowercased()
+                let code = $0.code.lowercased()
+                let query = text.lowercased()
+                return name.hasPrefix(query) || (dataSource.showCountryCodeInList && code.hasPrefix(query))
+            }))
+        }
+        tableView.reloadData()
+    }
+
+    public func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        clearSearchModeIfNeeded()
+    }
+
+    @objc private func clearSearchModeIfNeeded(delay: Bool = false) {
+        searchBar.endEditing(true)
+        searchTerm = ""
+        searchResults.removeAll()
+        disableSearchMode()
     }
 }
 
 // MARK:- CountryTableViewCell.
 class CountryTableViewCell: UITableViewCell {
-    
-    var flgSize: CGSize = .zero
-    
-    var dialingCodeLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
+        
+    var dialingCodeLabel: UILabel = UILabel()
+    var countryLabel: UILabel = UILabel()
+    var flagImageView: UIImageView = UIImageView()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         addSubview(dialingCodeLabel)
+        addSubview(flagImageView)
+        addSubview(countryLabel)
+
         if #available(iOS 9.0, *) {
+            dialingCodeLabel.translatesAutoresizingMaskIntoConstraints = false
+            flagImageView.translatesAutoresizingMaskIntoConstraints = false
+            countryLabel.translatesAutoresizingMaskIntoConstraints = false
+            
+            flagImageView.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 24).isActive = true
+            flagImageView.centerYAnchor.constraint(equalTo: self.centerYAnchor, constant: 0).isActive = true
+            flagImageView.widthAnchor.constraint(equalToConstant: 32).isActive = true
+            flagImageView.heightAnchor.constraint(equalToConstant: 22).isActive = true
+
             dialingCodeLabel.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -24).isActive = true
             dialingCodeLabel.centerYAnchor.constraint(equalTo: self.centerYAnchor, constant: 0).isActive = true
+            
+            countryLabel.leftAnchor.constraint(equalTo: flagImageView.rightAnchor, constant: 8).isActive = true
+            countryLabel.centerYAnchor.constraint(equalTo: self.centerYAnchor, constant: 0).isActive = true
         }
     }
     
@@ -311,8 +357,6 @@ class CountryTableViewCell: UITableViewCell {
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        imageView?.frame.size = flgSize
-        imageView?.center.y = contentView.center.y
     }
 }
 
@@ -467,3 +511,5 @@ extension UISearchBar {
     }
 
 }
+
+

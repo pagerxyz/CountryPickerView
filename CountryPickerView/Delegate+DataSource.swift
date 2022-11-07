@@ -119,11 +119,11 @@ public extension CountryPickerViewDataSource {
     }
     
     func cellImageViewCornerRadius(in countryPickerView: CountryPickerView) -> CGFloat {
-        return 2
+        return 0
     }
     
     func cellImageViewSize(in countryPickerView: CountryPickerView) -> CGSize {
-        return CGSize(width: 34, height: 24)
+        return CGSize(width: 30, height: 22)
     }
     
     func navigationTitle(in countryPickerView: CountryPickerView) -> String? {
