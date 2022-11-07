@@ -13,6 +13,7 @@ public class CountryPickerViewController: UITableViewController {
     public var searchController: UISearchController?
     private lazy var searchBar: UISearchBar = {
         let searchBar = UISearchBar()
+        searchBar.placeholder = "Search"
         searchBar.setupSearchBar(background: UIColor(hex: 0x121212), inputText: UIColor.white, placeholderText: UIColor.white.withAlphaComponent(0.5), image: UIColor.white.withAlphaComponent(0.5))
         searchBar.delegate = self
         return searchBar
