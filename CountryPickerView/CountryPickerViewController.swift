@@ -65,7 +65,7 @@ extension CountryPickerViewController {
         tableView.backgroundColor = UIColor(hex: 0x121212)
         tableView.backgroundView?.backgroundColor = UIColor(hex: 0x121212)
         let tapAroundGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
-        tapAroundGesture.cancelsTouchesInView = true
+        tapAroundGesture.cancelsTouchesInView = false
         tableView.addGestureRecognizer(tapAroundGesture)
         if !showOnlyPreferredSection {
             let countriesArray = countryPickerView.usableCountries
